@@ -2,9 +2,16 @@
 <form id="form-create-user" action="/" method="post">
     <div class="container">
         <h1>Create User</h1>
+        <div class="error"><?php echo isset($errors) && isset($errors['error']) ? $errors['error'] : '' ?></div>
         <p>Please fill in this form to create an user.</p>
         <hr>
-
+        <?php
+            if (!isset($_SESSION['token'])) {
+                $token = md5(uniqid(rand(), TRUE));
+                $_SESSION['token'] = $token;
+            }
+        ?>
+        <input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>" />
         <label for="username"><b>Username</b></label>
         <div class="error" id="error-username"><?php echo isset($errors) && isset($errors['username']) ? $errors['username'] : '' ?></div>
         <input type="text" placeholder="Enter Username" name="username" id="username" value="<?php echo $values['username'] ?? '' ?>">

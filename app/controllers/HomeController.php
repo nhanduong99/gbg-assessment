@@ -14,20 +14,33 @@ class HomeController extends Controller
 
     function createUser() {
         $postData = $_POST;
-        unset($postData['confirm_password']);
-        $userModel = new UserModel();
-        $is_existed_username = $userModel->get_user_detail_by_username($postData['username']);
-        if ($is_existed_username) {
-            $values = $postData;
-            $errors['username'] = 'User name is existed';
-            $this->render("home/index", [
-                'values' => $values,
-                'errors' => $errors
-            ]);
-        }
-        $userModel->create_user($postData);
 
-        $this->redirect("/user");
+        if (!empty($_POST['token'])) {
+            if (hash_equals($_SESSION['token'], $_POST['token'])) {
+                $userModel = new UserModel();
+                $is_existed_username = $userModel->get_user_detail_by_username($postData['username']);
+                if ($is_existed_username) {
+                    $values = $postData;
+                    $errors['username'] = 'User name is existed';
+                    $this->render("home/index", [
+                        'values' => $values,
+                        'errors' => $errors
+                    ]);
+                    exit();
+                }
+                $userModel->create_user($postData);
+
+                $this->redirect("/user");
+            } else {
+                $values = $postData;
+                $errors['error'] = 'Somethings went wrong';
+                $this->render("home/index", [
+                    'values' => $values,
+                    'errors' => $errors
+                ]);
+                exit();
+            }
+        }
     }
 
     function user() {
