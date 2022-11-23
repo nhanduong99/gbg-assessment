@@ -5,14 +5,18 @@ namespace App\Controllers;
 
 class Controller
 {
-    public function view($view, $data = array())
+    public function html_view_ajax($view, $data = array())
     {
         if (is_array($data)) {
             extract($data);
         }
         ob_start();
         include "./app/views/" . $view . ".php";
-        return ob_get_contents();
+
+        $content = ob_get_contents();
+
+        ob_clean();
+        return $content;
     }
 
     public function render($view, $data = array(), $layout = '_layout')
